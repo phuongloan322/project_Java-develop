@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Manhour Update</title>
+        <!-- Popper.js読み込み -->
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>  
+        <!-- BootstrapのCSS読み込み -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <!-- bootstrap-datepickerのCSS読み込み -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+        <!-- jQuery読み込み -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- BootstrapのJS読み込み -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+        <!-- bootstrap-datepickerのJS読み込み -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ja.min.js"></script>
+        <link th:href="@{/css/ManhourUpdate.css}" rel="stylesheet">
+        <!-- FontAwesomeの読み込み -->
+        <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+        <link rel="shortcut icon" href="#">
+        <script th:inline="javascript" th:src="@{/js/manhourUpdate.js}"></script>
+        <script th:inline="javascript" th:src="@{/js/selectTheme.js}"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-primary sticky-top flex-md-nowrap p-0 shadow">
+            <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#"><i class="fa fa-home"></i> 工数管理システム</a>
+            <div class="collapse navbar-collapse" id="navmenu1">
+                <div class="navbar-nav">
+                    <span class="form-control-menu">工数修正</span>
+                </div>
+            </div>
+            <ul class="navbar-nav px-3 d-flex align-items-center">
+                <li class="nav-item text-nowrap" >
+                    <button type="button" class="btn btn-light" onclick="javascript:history.go(-1)"><i class="fas fa-backward"></i> 戻る</button>
+                </li>
+                <span class="form-control-user">テスト太郎さん</span>
+                <li class="nav-item text-nowrap">
+                    <button type="button" class="btn btn-light">ログアウト <i class="fas fa-sign-out-alt"></i></button>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="container-fluid">
+            <div class="row">
+
+                 <main role="main" class="container-fluid px-4">
+                     <div class="alert alert-warning mb-2 " role="alert">
+                         <strong>アラート </strong> <p class="mes-warning"></p>
+                     </div>
+
+                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-2 mb-3 border-bottom">
+                         <form action="#" th:action="@{/ManhourUpdate/Search}" method="GET" th:object="${manhourOutput.inputSearch}" class="form-row align-items-center">
+                             <div class="col-auto">
+                                 <div class="input-group date">
+                                     <input type="text" class="form-control form-control-sm currentMonthAndYear" th:value="${manhourOutput.inputSearch.month}" th:id="month" th:name="month" readonly />
+                                 </div>
+                             </div>
+                             <div class="col-auto">
+                                 <select class="form-control form-control-sm groupCode" th:id="groupCode" th:name = "groupCode">
+                                     <option th:each="group : ${manhourOutput.groups}"
+                                     	th:value="${group.groupCode}"
+                                     	th:text="${group.groupCode}+' ['+${group.groupName}+']'"
+                                     	th:selected=${group.groupCode==manhourOutput.inputSearch.groupCode}
+                                     />
+                                 </select>
+                             </div>
+                             <div class="col-auto">
+                                 <select class="form-control form-control-sm userList" th:id="userNo" th:name="userNo">
+                                     <option th:each="user : ${manhourOutput.users}"
+                                     	th:value="${user.userNo}"
+                                     	th:text="${user.userNo}+' ['+${user.userName}+']'"
+                                     	th:selected=${user.userNo==manhourOutput.inputSearch.userNo}
+                                     />
+                                 </select>
+                             </div>
+                             <div class="col-auto">
+                                 <button class="btn btn-sm btn-outline-secondary mr-4" type="submit"><i class="fas fa-search"></i> 検索</button>
+                             </div>
+                         </form>
+                         <div class="btn-toolbar mb-2 mb-md-0">
+                             <button class="btn btn-sm btn-outline-secondary mr-2 dowloadCsv"><i class="fas fa-file-download"></i> CSVダウンロード</button>
+                             <form id="fileUploadForm">
+                             	<input id="fileCsvImport" type="file" name="csvFile" accept=".csv" style="display:none" />
+                             </form>
+                             <button class="btn btn-sm btn-outline-secondary mr-2" onclick=" document.getElementById('fileCsvImport').click();"><i class="fas fa-file-upload"></i> CSVアップロード</button>
+                             <button class="btn btn-sm btn-outline-secondary mr-2 saveManhourUpdate"><i class="far fa-save"></i> 保存</button> 
+                         </div>
+                     </div>
+
+                     <div class="row mb-2 align-items-center">
+                         <div class="col-md-3 input-group input-theme">
+                         	 <input type="hidden" class="appendThemeSelect">
+                             <input type="text" class="form-control form-control-sm appendNameThemeSelect"  placeholder="テーマ選択..." aria-label="..." aria-describedby="button-addon2" readonly>
+                             <div class="input-group-append">
+                                 <button type="button" id="button-addon2" class="btn btn-sm btn-outline-secondary selectTheme" data-toggle="modal" data-target="#modal1"><i class="fas fa-search"></i></button>
+                             </div>
+                         </div>
+                         <div class="col-md-2 input-group pr-2">
+                             <select class="form-control form-control-sm workContentsCode">
+                                 <option value = "">内容選択...</option>
+                                 
+                             </select>
+                         </div>
+                         <div class="col-md-2 input-group pr-2">
+                             <input class="form-control form-control-sm workContentsDetail" type="text"  placeholder="内容詳細 "> 
+                         </div>
+                         <div class="col-md-1 pl-0">
+                             <button class="btn btn-sm btn-outline-secondary mr-2 addThemeManhour"><i class="fas fa-arrow-down"></i> テーマ追加</button>
+                         </div>
+                     </div>
+
+ 					<!-- Modal -->
+                     <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="label1" aria-hidden="true">
+                         <div class="modal-dialog modal-lg" role="document">
+                              <div class="modal-content">
+                                  <div class="modal-header">
+                                      <h5 class="modal-title" id="label1">テーマ追加</h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                          <span aria-hidden="true">&times;</span>
+                                      </button>
+                                  </div>
+                                  <div class="modal-body">
+                                     <div class="container-fluid">
+                                         <form class="formSearchTheme">
+                                         <div class="row">
+                                             <div class="col-md-4">
+                                                 <div class="form-group">
+                                                     <label>テーマNo</label>
+                                                     <input type="text" class="form-control form-control-sm" id="selectThemeNo" name="themeNo">
+                                                 </div>
+                                             </div>
+                                             <div class="col-md-8">
+                                                 <div class="form-group">
+                                                     <label>テーマ名</label>
+                                                     <input type="text" class="form-control form-control-sm" id="selectThemeName" name="themeName">
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         <div class="row">
+                                             <div class="col-md-4">
+                                                 <div class="form-group">
+                                                     <label>担当部門</label>
+                                                     <select class="form-control form-control-sm accountingGroups" name="accountingGroupCode">
+                                                         
+                                                     </select>
+                                                 </div>                                                                                                               
+                                             </div>                                                     
+                                             <div class="col-md-4">
+                                                 <div class="form-group">
+                                                     <label>売上科目</label>
+                                                     <select class="form-control form-control-sm salesObjects" name="salesObjectCode">
+                                                         
+                                                     </select>
+                                                 </div>                                                                                                               
+                                             </div>                                                     
+                                             <div class="col-md-4">
+                                                 <div class="form-group">
+                                                     <label>売上状況</label>
+                                                     <div>                                                             
+                                                         <div class="form-check form-check-inline">
+                                                             <input class="form-check-input" type="radio" name="soldFlg" id="inlineRadio1" value="false" checked>
+                                                             <label class="form-check-label">未売上</label>
+                                                         </div>
+                                                         <div class="form-check form-check-inline">
+                                                             <input class="form-check-input" type="radio" name="soldFlg" id="inlineRadio2" value="true">
+                                                             <label class="form-check-label">売上済</label>
+                                                         </div>
+                                                         <div class="form-check form-check-inline">
+                                                             <input class="form-check-input" type="radio" name="soldFlg" id="inlineRadio3" value="全て">
+                                                             <label class="form-check-label">全て</label>
+                                                         </div>
+                                                     </div>
+                                                 </div>                                                                                                              
+                                             </div>
+                                         </div>
+                                         </form>
+                                         <div class="row">
+                                             <button type="button" class="btn btn-primary mt-2 mb-2 searchInfoTheme">検索</button>
+                                         </div>
+                                         <div class="table-responsive" style="height:300px">
+                                             <div class="table-responsive">
+                                                 <table class="table table-striped table-sm sc">
+                                                     <thead class=" table table-fixed thead-light">
+                                                         <tr>
+                                                             <th></th>
+                                                             <th>テーマNo</th>
+                                                             <th>テーマ名</th>                                                                         
+                                                             <th>売上状況</th>
+                                                         </tr>
+                                                     </thead>
+                                                     <tbody id="dataThemeSearch">
+                                                         
+                                                     </tbody> 
+                                                 </table>
+                                             </div>
+                                         </div>                                                 
+                                     </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+                                      <button type="button" class="btn btn-primary addOnThemeCheckBox" >追加</button>
+                                  </div>
+                              </div>
+                         </div>
+                     </div>
+                     <!-- Modal -->
+                     
+					<!-- Modal -->
+                     <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="label1" aria-hidden="true">
+                         <div class="modal-dialog modal-lg" role="document">
+                             <div class="modal-content">
+                                 <div class="modal-header">
+                                     <h5 class="modal-title" id="label1">テーマ変更</h5>
+                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                         <span aria-hidden="true">&times;</span>
+                                     </button>
+                                 </div>
+                                 <div class="modal-body">
+                                     <div class="row mb-2">
+                                         <div class="col-md-6 input-group">
+                                             <input type="text" class="form-control form-control-sm col-md-4 themeNoPresent" value="11101-XXXX" readonly>
+                                             <input type="text" class="form-control form-control-sm col-md-8 themeNamePresent" value="○○プロジェクト概要設計フェーズ" readonly>
+                                         </div>
+                                         <div class="col-md-6 input-group">
+                                             <input type="text" class="form-control form-control-sm col-md-12 workContentsCodePresent" value="20[概要設計]" readonly>
+                                             <input type="text" class="form-control form-control-sm col-md-12 workContentsDetailPresent" value="" readonly>
+                                         </div>
+                                     </div>
+                                     <div class="row d-flex justify-content-center mb-2">
+                                         <span><i class="fas fa-arrow-down"></i></span>
+                                     </div>
+                                     <div class="row">
+                                         <div class="col-md-6 input-group">
+                                             <input type="hidden" class="appendThemeSelect">
+				                             <input type="text" class="form-control form-control-sm appendNameThemeSelect"  placeholder="テーマ選択..." aria-label="..." aria-describedby="button-addon2" readonly>
+				                             <div class="input-group-append">
+				                                 <button type="button" id="button-addon2" class="btn btn-sm btn-outline-secondary selectTheme" data-toggle="modal" data-target="#modal1"><i class="fas fa-search"></i></button>
+				                             </div>
+                                         </div>
+                                         <div class="col-md-3 input-group pr-2">
+                                             <select class="form-control form-control-sm workContentsCode">
+                                                 <option>内容選択...</option>
+                                             </select>
+                                         </div>
+                                         <div class="col-md-3 input-group pr-2">
+                                             <input type="text" class="form-control form-control-sm workContentsDetail" placeholder="内容詳細..." aria-label="..." aria-describedby="button-addon2">
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="modal-footer">
+                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+                                     <button type="button" class="btn btn-primary submitChangeTheme">変更</button>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     <!-- Modal -->
+
+                     <div class="table-responsive">
+                     <form class="formManhourUpdate">
+                     	<table class="table table-striped table-sm">
+                             <thead class="thead-light">
+                                 <tr>
+                                     <th></th>
+                                     <th>テーマNo</th>
+                                     <th>テーマ名</th>
+                                     <th>内容</th>
+                                     <th>内容詳細</th>
+                                     <th>月計</th>
+                                     <th>1</th>
+                                     <th>2</th>
+                                     <th>3</th>
+                                     <th>4</th>
+                                     <th>5</th>
+                                     <th>6</th>
+                                     <th>7</th>
+                                     <th>8</th>
+                                     <th>9</th>
+                                     <th>10</th>
+                                     <th>11</th>
+                                     <th>12</th>
+                                     <th>13</th>
+                                     <th>14</th>
+                                     <th>15</th>
+                                     <th>16</th>
+                                     <th>17</th>
+                                     <th>18</th>
+                                     <th>19</th>
+                                     <th>20</th>
+                                     <th>21</th>
+                                     <th>22</th>
+                                     <th>23</th>
+                                     <th>24</th>
+                                     <th>25</th>
+                                     <th>26</th>
+                                     <th>27</th>
+                                     <th>28</th>
+                                     <th>29</th>
+                                     <th>30</th>
+                                     <th>31</th>
+                                     <th colspan="2">操作</th>
+                                 </tr>
+                             </thead>
+                             <tfoot>
+                                 <tr>
+                                     <td></td>
+                                     <td></td>
+                                     <td>合計</td>
+                                     <td></td>
+                                     <td></td>
+                                     <td th:text="${manhourOutput.manhourTotal().sum()}" class="totalMonth"></td>
+                                     <td th:classappend="${manhourOutput.holidays[0]} ? table-danger : '' " >
+                                     	<i th:if="${manhourOutput.manhourTotal().day1 > 0 and manhourOutput.manhourTotal().day1 < 8 and !manhourOutput.holidays[0]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day1 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day1}" class="totalcol1"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[1]} ? table-danger : '' " >
+                                     	<i th:if="${manhourOutput.manhourTotal().day2 > 0 and manhourOutput.manhourTotal().day2 < 8 and !manhourOutput.holidays[1]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day2 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day2}" class="totalcol2"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[2]} ? table-danger : '' ">
+                                    	<i th:if="${manhourOutput.manhourTotal().day3 > 0 and manhourOutput.manhourTotal().day3 < 8  and !manhourOutput.holidays[2]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day3 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day3}" class="totalcol3"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[3]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day4 > 0 and manhourOutput.manhourTotal().day4 < 8 and !manhourOutput.holidays[3]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day4 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day4}" class="totalcol4"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[4]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day5 > 0 and manhourOutput.manhourTotal().day5 < 8 and !manhourOutput.holidays[4]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day5 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day5}" class="totalcol5"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[5]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day6 > 0 and manhourOutput.manhourTotal().day6 < 8 and !manhourOutput.holidays[5]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day6 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day6}" class="totalcol6"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[6]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day7 > 0 and manhourOutput.manhourTotal().day7 < 8 and !manhourOutput.holidays[6]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day7 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day7}" class="totalcol7"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[7]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day8 > 0 and manhourOutput.manhourTotal().day8 < 8 and !manhourOutput.holidays[7]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day8 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day8}" class="totalcol8"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[8]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day9 > 0 and manhourOutput.manhourTotal().day9 < 8 and !manhourOutput.holidays[8]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day9 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day9}" class="totalcol9"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[9]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day10 > 0 and manhourOutput.manhourTotal().day10 < 8 and !manhourOutput.holidays[9]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day10 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day10}" class="totalcol10"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[10]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day11> 0 and manhourOutput.manhourTotal().day11 < 8 and !manhourOutput.holidays[10]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day11 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day11}" class="totalcol11"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[11]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day12 > 0 and manhourOutput.manhourTotal().day12 < 8 and !manhourOutput.holidays[11]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day12 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day12}" class="totalcol12"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[12]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day13 > 0 and manhourOutput.manhourTotal().day13 < 8 and !manhourOutput.holidays[12]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day13 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day13}" class="totalcol13"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[13]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day14 > 0 and manhourOutput.manhourTotal().day14 < 8 and !manhourOutput.holidays[13]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day14 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day14}" class="totalcol14"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[14]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day15 > 0 and manhourOutput.manhourTotal().day15 < 8 and !manhourOutput.holidays[14]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day15 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day15}" class="totalcol15"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[15]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day16 > 0 and manhourOutput.manhourTotal().day16 < 8 and !manhourOutput.holidays[15]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day16 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day16}" class="totalcol16"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[16]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day17 > 0 and manhourOutput.manhourTotal().day17 < 8 and !manhourOutput.holidays[16]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day17 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day17}" class="totalcol17"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[17]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day18 > 0 and manhourOutput.manhourTotal().day18 < 8 and !manhourOutput.holidays[17]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day18 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day18}" class="totalcol18"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[18]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day19 > 0 and manhourOutput.manhourTotal().day19 < 8  and !manhourOutput.holidays[18]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day19 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day19}" class="totalcol19"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[19]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day20 > 0 and manhourOutput.manhourTotal().day20 < 8 and !manhourOutput.holidays[19]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day20 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day20}" class="totalcol20"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[20]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day21 > 0 and manhourOutput.manhourTotal().day21 < 8  and !manhourOutput.holidays[20]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day21 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day21}" class="totalcol21"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[21]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day22 > 0 and manhourOutput.manhourTotal().day22 < 8  and !manhourOutput.holidays[21]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day22 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day22}" class="totalcol22"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[22]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day23 > 0 and manhourOutput.manhourTotal().day23 < 8  and !manhourOutput.holidays[22]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day23 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day23}" class="totalcol23"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[23]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day24 > 0 and manhourOutput.manhourTotal().day24 < 8 and !manhourOutput.holidays[23]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day24 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day24}" class="totalcol24"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[24]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day25 > 0 and manhourOutput.manhourTotal().day25 < 8 and !manhourOutput.holidays[24]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day25 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day25}" class="totalcol25"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[25]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day26 > 0 and manhourOutput.manhourTotal().day26 < 8 and !manhourOutput.holidays[25]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day26 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day26}" class="totalcol26"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[26]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day27 > 0 and manhourOutput.manhourTotal().day27 < 8 and !manhourOutput.holidays[26]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day27 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day27}" class="totalcol27"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[27]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day28 > 0 and manhourOutput.manhourTotal().day28 < 8 and !manhourOutput.holidays[27]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day28 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day28}" class="totalcol28"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[28]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day29 > 0 and manhourOutput.manhourTotal().day29 < 8 and !manhourOutput.holidays[28]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day29 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day29}" class="totalcol29"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[29]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day30 > 0 and manhourOutput.manhourTotal().day30 < 8 and !manhourOutput.holidays[29]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day30 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day30}" class="totalcol30"></span>
+                                     </td>
+                                     <td th:classappend="${manhourOutput.holidays[30]} ? table-danger : '' ">
+                                     	<i th:if="${manhourOutput.manhourTotal().day31 > 0 and manhourOutput.manhourTotal().day31 < 8 and !manhourOutput.holidays[30]}" class="fas fa-exclamation-circle text-warning hour-min" data-toggle="tooltip" title="合計工数が8h未満です"></i>
+                                     	<i th:if="${manhourOutput.manhourTotal().day31 > 24}" class="fas fa-exclamation-circle text-warning hour-max" data-toggle="tooltip" title="労働時間の合計が24hを超えることはできません。"></i>
+                                     	<span th:text="${manhourOutput.manhourTotal().day31}"  class="totalcol31"></span>
+                                     </td>
+                                     <td></td>
+                                     <td></td>
+                                 </tr>
+                                 <tr>
+                                     <td></td>
+                                     <td></td>
+                                     <td>残工数</td>
+                                     <td></td>
+                                     <td></td>
+                                     <td></td>
+                                     <td th:classappend="${manhourOutput.holidays[0]} ? table-danger : ''  " th:text="${manhourOutput.holidays[0] || manhourOutput.manhourTotal().manhourMissing().day1 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day1}" class="missing_col1"></td>
+                                     <td th:classappend="${manhourOutput.holidays[1]} ? table-danger : '' " th:text="${manhourOutput.holidays[1] || manhourOutput.manhourTotal().manhourMissing().day2 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day2}" class="missing_col2"></td>
+                                     <td th:classappend="${manhourOutput.holidays[2]} ? table-danger : '' " th:text="${manhourOutput.holidays[2] || manhourOutput.manhourTotal().manhourMissing().day3 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day3}" class="missing_col3"></td>
+                                     <td th:classappend="${manhourOutput.holidays[3]} ? table-danger : '' " th:text="${manhourOutput.holidays[3] || manhourOutput.manhourTotal().manhourMissing().day4 == 0 ? '' : manhourOutput.manhourTotal().manhourMissing().day4}" class="missing_col4"></td>
+                                     <td th:classappend="${manhourOutput.holidays[4]} ? table-danger : '' " th:text="${manhourOutput.holidays[4] || manhourOutput.manhourTotal().manhourMissing().day5 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day5}" class="missing_col5"></td>
+                                     <td th:classappend="${manhourOutput.holidays[5]} ? table-danger : '' " th:text="${manhourOutput.holidays[5] || manhourOutput.manhourTotal().manhourMissing().day6 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day6}" class="missing_col6"></td>
+                                     <td th:classappend="${manhourOutput.holidays[6]} ? table-danger : '' " th:text="${manhourOutput.holidays[6] || manhourOutput.manhourTotal().manhourMissing().day7 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day7}" class="missing_col7"></td>
+                                     <td th:classappend="${manhourOutput.holidays[7]} ? table-danger : '' " th:text="${manhourOutput.holidays[7] || manhourOutput.manhourTotal().manhourMissing().day8 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day8}" class="missing_col8"></td>
+                                     <td th:classappend="${manhourOutput.holidays[8]} ? table-danger : '' " th:text="${manhourOutput.holidays[8] || manhourOutput.manhourTotal().manhourMissing().day9 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day9}" class="missing_col9"></td>
+                                     <td th:classappend="${manhourOutput.holidays[9]} ? table-danger : '' " th:text="${manhourOutput.holidays[9] || manhourOutput.manhourTotal().manhourMissing().day10 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day10}" class="missing_col10"></td>
+                                     <td th:classappend="${manhourOutput.holidays[10]} ? table-danger : '' " th:text="${manhourOutput.holidays[10] || manhourOutput.manhourTotal().manhourMissing().day11 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day11}" class="missing_col11"></td>
+                                     <td th:classappend="${manhourOutput.holidays[11]} ? table-danger : '' " th:text="${manhourOutput.holidays[11] || manhourOutput.manhourTotal().manhourMissing().day12 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day12}" class="missing_col12"></td>
+                                     <td th:classappend="${manhourOutput.holidays[12]} ? table-danger : '' " th:text="${manhourOutput.holidays[12] || manhourOutput.manhourTotal().manhourMissing().day13 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day13}" class="missing_col13"></td>
+                                     <td th:classappend="${manhourOutput.holidays[13]} ? table-danger : '' " th:text="${manhourOutput.holidays[13] || manhourOutput.manhourTotal().manhourMissing().day14 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day14}" class="missing_col14"></td>
+                                     <td th:classappend="${manhourOutput.holidays[14]} ? table-danger : '' " th:text="${manhourOutput.holidays[14] || manhourOutput.manhourTotal().manhourMissing().day15 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day15}" class="missing_col15"></td>
+                                     <td th:classappend="${manhourOutput.holidays[15]} ? table-danger : '' " th:text="${manhourOutput.holidays[15] || manhourOutput.manhourTotal().manhourMissing().day16 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day16}" class="missing_col16"></td>
+                                     <td th:classappend="${manhourOutput.holidays[16]} ? table-danger : '' " th:text="${manhourOutput.holidays[16] || manhourOutput.manhourTotal().manhourMissing().day17 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day17}" class="missing_col17"></td>
+                                     <td th:classappend="${manhourOutput.holidays[17]} ? table-danger : '' " th:text="${manhourOutput.holidays[17] || manhourOutput.manhourTotal().manhourMissing().day18 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day18}" class="missing_col18"></td>
+                                     <td th:classappend="${manhourOutput.holidays[18]} ? table-danger : '' " th:text="${manhourOutput.holidays[18] || manhourOutput.manhourTotal().manhourMissing().day19 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day19}" class="missing_col19"></td>
+                                     <td th:classappend="${manhourOutput.holidays[19]} ? table-danger : '' " th:text="${manhourOutput.holidays[19] || manhourOutput.manhourTotal().manhourMissing().day20 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day20}" class="missing_col20"></td>
+                                     <td th:classappend="${manhourOutput.holidays[20]} ? table-danger : '' " th:text="${manhourOutput.holidays[20] || manhourOutput.manhourTotal().manhourMissing().day21 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day21}" class="missing_col21"></td>
+                                     <td th:classappend="${manhourOutput.holidays[21]} ? table-danger : '' " th:text="${manhourOutput.holidays[21] || manhourOutput.manhourTotal().manhourMissing().day22 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day22}" class="missing_col22"></td>
+                                     <td th:classappend="${manhourOutput.holidays[22]} ? table-danger : '' " th:text="${manhourOutput.holidays[22] || manhourOutput.manhourTotal().manhourMissing().day23 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day23}" class="missing_col23"></td>
+                                     <td th:classappend="${manhourOutput.holidays[23]} ? table-danger : '' " th:text="${manhourOutput.holidays[23] || manhourOutput.manhourTotal().manhourMissing().day24 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day24}" class="missing_col24"></td>
+                                     <td th:classappend="${manhourOutput.holidays[24]} ? table-danger : '' " th:text="${manhourOutput.holidays[24] || manhourOutput.manhourTotal().manhourMissing().day25 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day25}" class="missing_col25"></td>
+                                     <td th:classappend="${manhourOutput.holidays[25]} ? table-danger : '' " th:text="${manhourOutput.holidays[25] || manhourOutput.manhourTotal().manhourMissing().day26 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day26}" class="missing_col26"></td>
+                                     <td th:classappend="${manhourOutput.holidays[26]} ? table-danger : '' " th:text="${manhourOutput.holidays[26] || manhourOutput.manhourTotal().manhourMissing().day27 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day27}" class="missing_col27"></td>
+                                     <td th:classappend="${manhourOutput.holidays[27]} ? table-danger : '' " th:text="${manhourOutput.holidays[27] || manhourOutput.manhourTotal().manhourMissing().day28 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day28}" class="missing_col28"></td>
+                                     <td th:classappend="${manhourOutput.holidays[28]} ? table-danger : '' " th:text="${manhourOutput.holidays[28] || manhourOutput.manhourTotal().manhourMissing().day29 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day29}" class="missing_col29"></td>
+                                     <td th:classappend="${manhourOutput.holidays[29]} ? table-danger : '' " th:text="${manhourOutput.holidays[29] || manhourOutput.manhourTotal().manhourMissing().day30 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day30}" class="missing_col30"></td>
+                                     <td th:classappend="${manhourOutput.holidays[30]} ? table-danger : '' " th:text="${manhourOutput.holidays[30] || manhourOutput.manhourTotal().manhourMissing().day31 == 0  ? '' : manhourOutput.manhourTotal().manhourMissing().day31}" class="missing_col31"></td>
+                                     <td></td>
+                                     <td></td>
+                                 </tr>                                 
+                             </tfoot>                             
+                             <tbody class="tbody">
+                                 <tr th:each="manhour,state : ${manhourOutput.manhour}" class="tr_tbody">
+                                     <td><div class="text-center"><i class="fas fa-thumbtack" style="color: #D3D3D3;"></div></td>
+                                   	 <td style="display:none">
+                                   	 <span style="display:none" th:text="${manhour.workContentsCodeName}" class="workContentsCodeName"></span>
+                                   	 <input type="hidden" th:value="${manhour.year}" th:name="year">
+                                     <input type="hidden" th:value="${manhour.month}" th:name="month">
+                                     <input type="hidden" th:value="${manhour.userNo}" th:name="userNo" class="userNo">
+                                     <input type="hidden" th:value="${manhour.groupCode}" th:name="groupCode">
+                                     <input type="hidden" th:value="${manhour.siteCode}" th:name="siteCode">
+                                     <input type="hidden" th:value="${manhour.themeNo}" th:name="themeNo" class="themeNo">
+                                     <input type="hidden" th:value="${manhour.workContentsClass}" th:name="workContentsClass" class="workContentsClass">
+                                     <input type="hidden" th:value="${manhour.workContentsCode}" th:name="workContentsCode" class="workContentsCode">
+                                     <input type="hidden" th:value="${manhour.workContentsDetail}" th:name="workContentsDetail" class="workContentsDetail">
+                                     <input type="hidden" th:value="${manhour.pinFlg}" th:name="pinFlg">
+                                     <input type="hidden" th:value="${manhour.sum()}" th:name="total" th:class="'totalRrow'+${state.count}">
+                                     <input type="hidden" th:value="${manhour.fixDate}" th:name="fixDate">
+                                   	 </td>
+                                     <td th:text="${manhour.themeNo}" class="themeNotd"></td>
+                                     <td th:text="${manhour.themeName1}" class="themeName1"></td>                                     
+                                     <td th:text="${manhour.workContentsCode}" class="workContentsCodetd" data-toggle="tooltip" th:title="${manhour.workContentsCode} + ' ['+ ${manhour.workContentsCodeName} +']'"></td>
+                                     <td th:text="${manhour.workContentsDetail}" class="workContentsDetailtd"></td>
+                                     <td th:text="${manhour.sum()}" th:classappend="'totalrow'+${state.count}"></td>
+                                     <td th:classappend="${manhourOutput.holidays[0]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;" th:value="${manhour.day1}" class="form-control table-input col1" data-day="day1" th:name="day1"></td>
+                                     <td th:classappend="${manhourOutput.holidays[1]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day2}"  class="form-control table-input col2" data-day="day2" th:name="day2"></td>
+                                     <td th:classappend="${manhourOutput.holidays[2]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day3}"  class="form-control table-input col3" data-day="day3" th:name="day3"></td>
+                                     <td th:classappend="${manhourOutput.holidays[3]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day4}" class="form-control table-input col4" data-day="day4" th:name="day4"></td>
+                                     <td th:classappend="${manhourOutput.holidays[4]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day5}"  class="form-control table-input col5" data-day="day5" th:name="day5"></td>
+                                     <td th:classappend="${manhourOutput.holidays[5]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day6}"  class="form-control table-input col6" data-day="day6" th:name="day6"></td>
+                                     <td th:classappend="${manhourOutput.holidays[6]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day7}"  class="form-control table-input col7" data-day="day7" th:name="day7"></td>
+                                     <td th:classappend="${manhourOutput.holidays[7]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day8}"  class="form-control table-input col8" data-day="day8" th:name="day8"></td>
+                                     <td th:classappend="${manhourOutput.holidays[8]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day9}"  class="form-control table-input col9" data-day="day9" th:name="day9"></td>
+                                     <td th:classappend="${manhourOutput.holidays[9]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day10}"  class="form-control table-input col10" data-day="day10" th:name="day10"></td>
+                                     <td th:classappend="${manhourOutput.holidays[10]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day11}"  class="form-control table-input col11" data-day="day11" th:name="day11"></td>
+                                     <td th:classappend="${manhourOutput.holidays[11]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day12}"  class="form-control table-input col12" data-day="day12" th:name="day12"></td>
+                                     <td th:classappend="${manhourOutput.holidays[12]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day13}" class="form-control table-input col13" data-day="day13" th:name="day13"></td>
+                                     <td th:classappend="${manhourOutput.holidays[13]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day14}"  class="form-control table-input col14" data-day="day14" th:name="day14"></td>
+                                     <td th:classappend="${manhourOutput.holidays[14]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day15}"  class="form-control table-input col15" data-day="day15" th:name="day15"></td>
+                                     <td th:classappend="${manhourOutput.holidays[15]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day16}"  class="form-control table-input col16" data-day="day16" th:name="day16"></td>
+                                     <td th:classappend="${manhourOutput.holidays[16]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day17}"  class="form-control table-input col17" data-day="day17" th:name="day17"></td>
+                                     <td th:classappend="${manhourOutput.holidays[17]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;" th:value="${manhour.day18}"  class="form-control table-input col18" data-day="day18" th:name="day18"></td>
+                                     <td th:classappend="${manhourOutput.holidays[18]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day19}"  class="form-control table-input col19" data-day="day19" th:name="day19"></td>
+                                     <td th:classappend="${manhourOutput.holidays[19]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day20}"  class="form-control table-input col20" data-day="day20" th:name="day20"></td>
+                                     <td th:classappend="${manhourOutput.holidays[20]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day21}"  class="form-control table-input col21" data-day="day21" th:name="day21"></td>
+                                     <td th:classappend="${manhourOutput.holidays[21]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day22}"  class="form-control table-input col22" data-day="day22" th:name="day22"></td>
+                                     <td th:classappend="${manhourOutput.holidays[22]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day23}"  class="form-control table-input col23" data-day="day23" th:name="day23"></td>
+                                     <td th:classappend="${manhourOutput.holidays[23]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day24}"  class="form-control table-input col24" data-day="day24" th:name="day24"></td>
+                                     <td th:classappend="${manhourOutput.holidays[24]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day25}"  class="form-control table-input col25" data-day="day25" th:name="day25"></td>
+                                     <td th:classappend="${manhourOutput.holidays[25]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day26}"  class="form-control table-input col26" data-day="day26" th:name="day26"></td>
+                                     <td th:classappend="${manhourOutput.holidays[26]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day27}"  class="form-control table-input col27" data-day="day27" th:name="day27"></td>
+                                     <td th:classappend="${manhourOutput.holidays[27]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day28}"  class="form-control table-input col28" data-day="day28" th:name="day28"></td>
+                                     <td th:classappend="${manhourOutput.holidays[28]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day29}"  class="form-control table-input col29" data-day="day29" th:name="day29"></td>
+                                     <td th:classappend="${manhourOutput.holidays[29]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day30}"  class="form-control table-input col30" data-day="day30" th:name="day30"></td>
+                                     <td th:classappend="${manhourOutput.holidays[30]} ? table-danger : '' ">
+                                     	<input th:classappend="'row'+${state.count}" type="number" min=0 maxlength=4 oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"  th:value="${manhour.day31}"  class="form-control table-input  col31" data-day="day31" th:name="day31"></td>
+                                     <td><div class="text-center"><i class="fas fa-exchange-alt changeTheme" data-toggle="modal" data-target="#modal3"></i></div></td>
+                                     <td><div class="text-center delete-Theme"><i class="far fa-trash-alt"></i></div></td>
+                                 </tr>                                 
+                             </tbody>
+                         </table>
+                     </form>
+                     </div>
+                 </main>
+				<input type="hidden" th:value="${manhourOutput.dayNow}" id="currentDay">
+				<input type="hidden" th:value="${manhourOutput.inputSearch.userNo}" id="userNoSearch">
+				<input type="hidden" th:value="${manhourOutput.inputSearch.groupCode}" id="groupCodeSearch">
+				<input type="hidden" th:value="${manhourOutput.inputSearch.siteCode}" id="siteCodeSearch">
+            </div>
+        </div>
+
+    </body>
+    <script th:inline="javascript" th:src="@{/js/jquery.fileDownload.js}"></script>
+</html>
+

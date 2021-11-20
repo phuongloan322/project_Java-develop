@@ -1,0 +1,222 @@
+<div class="manHourInput_week" th:fragment="ManHourInput_Week">
+	<div class="row mb-2 align-items-center ">
+		<div class="col-md-4 input-group">
+			<input type="text" class="form-control form-control-sm"
+				placeholder="テーマ選択..." aria-label="..."
+				aria-describedby="button-addon2" readonly>
+			<div class="input-group-append">
+				<button type="button" id="button-addon2"
+					class="btn btn-sm btn-outline-secondary" data-toggle="modal"
+					data-target="#modal1">
+					<i class="fas fa-search"></i>
+				</button>
+			</div>
+		</div>
+		<div class="col-md-2 input-group pr-2">
+			<select class="form-control form-control-sm"
+				id="selectWorkContentCode">
+			</select>
+		</div>
+		<div class="col-md-2 input-group">
+			<input type="text" class="form-control form-control-sm"
+				placeholder="内容詳細..." aria-label="..."
+				aria-describedby="button-addon2">
+		</div>
+		<div class="col-md-4 pl-0">
+			<button class="btn btn-sm btn-outline-secondary mr-2">
+				<i class="fas fa-arrow-down"></i> テーマ追加
+			</button>
+		</div>
+	</div>
+
+	<div class="table-responsive">
+		<form class="form-ManhourWeek">
+			<table class="table table-striped table-sm week-table">
+				<thead class="thead-light week-thead">
+					<tr>
+						<th style="width: 4%"></th>
+						<th style="width: 10%">テーマNo</th>
+						<th style="width: 18%">テーマ名</th>
+						<th style="width: 6%">内容</th>
+						<th style="width: 6%">内容詳細</th>
+						<th style="width: 6%">週計</th>
+						<th style="width: 6%" class="day-in-week check-day"
+							th:if="${Sun != null}"
+							th:text="${#dates.format(Sun, 'MM/dd')}+'-日'"
+							th:attr="data-day=${#dates.format(Sun, 'yyyy/MM/dd hh:mm:ss')}">
+						</th>
+						<th style="width: 6%" class="day-in-week check-day"
+							th:if="${Mon != null}"
+							th:text="${#dates.format(Mon, 'MM/dd')}+'-月'"
+							th:attr="data-day=${#dates.format(Mon, 'yyyy/MM/dd hh:mm:ss')}"></th>
+						<th style="width: 6%" class="day-in-week check-day"
+							th:if="${Tue != null}"
+							th:text="${#dates.format(Tue, 'MM/dd')}+'-火'"
+							th:attr="data-day=${#dates.format(Tue, 'yyyy/MM/dd hh:mm:ss')}"></th>
+						<th style="width: 6%" class="day-in-week check-day"
+							th:if="${Wed != null}"
+							th:text="${#dates.format(Wed, 'MM/dd')}+'-水'"
+							th:attr="data-day=${#dates.format(Wed, 'yyyy/MM/dd hh:mm:ss')}"></th>
+						<th style="width: 6%" class="day-in-week check-day"
+							th:if="${Thu != null}"
+							th:text="${#dates.format(Thu, 'MM/dd')}+'-木'"
+							th:attr="data-day=${#dates.format(Thu, 'yyyy/MM/dd hh:mm:ss')}"></th>
+						<th style="width: 6%" class="day-in-week check-day"
+							th:if="${Fri != null}"
+							th:text="${#dates.format(Fri, 'MM/dd')}+'-金'"
+							th:attr="data-day=${#dates.format(Fri, 'yyyy/MM/dd hh:mm:ss')}"></th>
+						<th style="width: 6%" class="day-in-week check-day"
+							th:if="${Sat != null}"
+							th:text="${#dates.format(Sat, 'MM/dd')}+'-土'"
+							th:attr="data-day=${#dates.format(Sat, 'yyyy/MM/dd hh:mm:ss')}"></th>
+						<th class="text-right" style="width: 4%">操作</th>
+						<th style="width: 4%"></th> 
+					</tr>
+				</thead>
+				<tbody class="week-tbody">
+					<tr th:each="dayOfWeek: ${HourInput.showManhourInput}">
+						<td><div class="text-center">
+								<i class="fas fa-thumbtack" style="color: #D3D3D3;">
+							</div></td>
+						<td class="theme-no" th:text="${dayOfWeek.themeNo}"></td>
+						<td class="theme-name1" th:text="${dayOfWeek.themeName1}"></td>
+						<td class="work-content-code"><span
+							th:text="${dayOfWeek.workContentsCode}"></span>:<span
+							th:text="${dayOfWeek.workContentsCodeName}"></span></td>
+						<td th:text="${dayOfWeek.workContentsClassName}"></td>
+						<td class="work-contents-code1"
+							th:text="${dayOfWeek.workContentsCode}" style="display: none;"></td>
+						<td class="work-contents-class"
+							th:text="${dayOfWeek.workContentsClass}" style="display: none;"></td>
+						<td class="work-contents-detail"
+							th:text="${dayOfWeek.workContentsDetail}" style="display: none;"></td>
+						<input type="hidden" th:value="${dayOfWeek.year}" name="year"
+							class="year">
+						<input type="hidden" th:value="${dayOfWeek.month}" name="month"
+							class="month">
+						<input type="hidden" th:value="${dayOfWeek.userNo}" name="userNo"
+							class="userNo">
+						<input type="hidden" th:value="${dayOfWeek.groupCode}"
+							name="groupCode">
+						<input type="hidden" th:value="${dayOfWeek.siteCode}"
+							name="siteCode">
+						<input type="hidden" th:value="${dayOfWeek.themeNo}"
+							name="themeNo">
+						<input type="hidden" th:value="${dayOfWeek.workContentsClass}"
+							name="workContentsClass">
+						<input type="hidden" th:value="${dayOfWeek.workContentsCode}"
+							name="workContentsCode">
+						<input type="hidden" th:value="${dayOfWeek.workContentsDetail}"
+							name="workContentsDetail">
+						<input class="getSun" type="hidden"
+							th:value="Day+${#dates.format(Sun, 'd')}">
+						<input class="getMon" type="hidden"
+							th:value="Day+${#dates.format(Mon, 'd')}">
+						<input class="getTue" type="hidden"
+							th:value="Day+${#dates.format(Tue, 'd')}">
+						<input class="getWed" type="hidden"
+							th:value="Day+${#dates.format(Wed, 'd')}">
+						<input class="getThu" type="hidden"
+							th:value="Day+${#dates.format(Thu, 'd')}">
+						<input class="getFri" type="hidden"
+							th:value="Day+${#dates.format(Fri, 'd')}">
+						<input class="getSat" type="hidden"
+							th:value="Day+${#dates.format(Sat, 'd')}">
+
+						<td th:text="${dayOfWeek.totalHourWeek()}" class="total-hour-week"></td>
+						<td class=" table-danger" th:if="${Sun != null}"><input
+							type="number" th:value="${dayOfWeek.sun}"
+							class="form-control value-hour-week" min=0 maxlength=4
+							th:name="day+${#dates.format(Sun, 'd')}"
+							oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"></td>
+						<td th:if="${Mon != null}"><input type="number"
+							th:value="${dayOfWeek.mon}"
+							th:name="day+${#dates.format(Mon, 'd')}"
+							class="form-control value-hour-week" min=0 maxlength=4
+							oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"></td>
+						<td th:if="${Tue != null}"><input type="number"
+							th:value="${dayOfWeek.tue}"
+							th:name="day+${#dates.format(Tue, 'd')}"
+							class="form-control value-hour-week " min=0 maxlength=4
+							oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"></td>
+						<td th:if="${Wed != null}"><input type="number"
+							th:value="${dayOfWeek.wed}"
+							th:name="day+${#dates.format(Wed, 'd')}"
+							class="form-control value-hour-week" min=0 maxlength=4
+							oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"></td>
+						<td th:if="${Thu != null}"><input type="number"
+							th:value="${dayOfWeek.thu}"
+							th:name="day+${#dates.format(Thu, 'd')}"
+							class="form-control value-hour-week" min=0 maxlength=4
+							oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"></td>
+						<td th:if="${Fri != null}"><input type="number"
+							th:value="${dayOfWeek.fri}"
+							th:name="day+${#dates.format(Fri, 'd')}"
+							class="form-control value-hour-week" min=0 maxlength=4
+							oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"></td>
+						<td class=" table-danger" th:if="${Sat != null}"><input
+							type="number" th:name="day+${#dates.format(Sat, 'd')}"
+							th:value="${dayOfWeek.sat}" class="form-control value-hour-week"
+							min=0 maxlength=4
+							oninput="this.value=this.value.slice(0,this.maxLength||0);this.value=(this.value < 0) ? (0) : this.value;"></td>
+
+						<td><div class="text-center">
+								<i class="btn-change-Theme fas fa-exchange-alt"></i>
+							</div></td>
+						<td><div class="text-center">
+								<i class="btn-delete-Theme far fa-trash-alt"></i>
+							</div></td>
+					</tr>
+				</tbody>
+				</form>
+				<tfoot class="week-tfoot">
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td>合計</td>
+						<td class="total-hour-week"></td>
+						<td th:if="${Sun != null}" class="table-danger value-total-week"></td>
+						<td th:if="${Mon != null}"
+							th:class="'value-total-week totalcol' + ${#dates.format(Mon, 'd')}"></td>
+						<td th:if="${Tue != null}"
+							th:class="'value-total-week totalcol' + ${#dates.format(Tue, 'd')}"></td>
+						<td th:if="${Wed != null}"
+							th:class="'value-total-week totalcol' + ${#dates.format(Wed, 'd')}"></td>
+						<td th:if="${Thu != null}"
+							th:class="'value-total-week totalcol' + ${#dates.format(Thu, 'd')}"></td>
+						<td th:if="${Fri != null}"
+							th:class="'value-total-week totalcol' + ${#dates.format(Fri, 'd')}"></td>
+						<td th:if="${Sat != null}" class="table-danger value-total-week"></td>
+						<td><input type="hidden"
+							th:value="${#numbers.formatInteger(dayOfMonth, 1)}"
+							id="currentDay"></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td>不足工数</td>
+						<td></td>
+						<td th:if="${Sun != null}" class="table-danger rest-hour-week"></td>
+						<td th:if="${Mon != null}"
+							th:class="'rest-hour-week missing_col' + ${#dates.format(Mon, 'd')}"></td>
+						<td th:if="${Tue != null}"
+							th:class="'rest-hour-week missing_col' + ${#dates.format(Tue, 'd')}"></td>
+						<td th:if="${Wed != null}"
+							th:class="'rest-hour-week missing_col' + ${#dates.format(Wed, 'd')}"></td>
+						<td th:if="${Thu != null}"
+							th:class="'rest-hour-week missing_col' + ${#dates.format(Thu, 'd')}"></td>
+						<td th:if="${Fri != null}"
+							th:class="'rest-hour-week missing_col' + ${#dates.format(Fri, 'd')}"></td>
+						<td th:if="${Sat != null}" class="table-danger rest-hour-week"></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>
+	</div>
+</div>

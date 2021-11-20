@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Conting Data Output</title>
+        <!-- BootstrapのCSS読み込み -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <!-- FullCalendarのCSS読み込み -->
+        <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css' rel='stylesheet' />
+
+        <!-- jQuery読み込み -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <!-- Popper.js読み込み -->        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <!-- BootstrapのJS読み込み -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+        <!-- FullCalendarのJS読み込み -->
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/locale/ja.js'></script> 
+        <link th:href="@{/css/contingData.css}" rel="stylesheet" />
+        <script th:inline="javascript" th:src="@{/js/contingData.js}"></script>
+    </head>
+    <body>
+    	<nav class="navbar navbar-expand-sm navbar-dark bg-primary sticky-top flex-md-nowrap p-0 shadow">
+            <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#"><i class="fa fa-home"></i> 工数管理システム</a>
+            <div class="collapse navbar-collapse" id="navmenu1">
+                <div class="navbar-nav">
+                    <span class="form-control-menu">原価計算データ出力</span>
+                </div>
+            </div>
+            <ul class="navbar-nav px-3 d-flex align-items-center">
+                <span class="form-control-user" th:text="${userName}"></span>
+                <li class="nav-item text-nowrap">
+                    <button type="button" class="btn btn-light">ログアウト <i class="fas fa-sign-out-alt"></i></button>
+                </li>
+            </ul>
+        </nav>
+        <div class="container">
+        	<div class="error text-danger"></div>
+            <form class="" action="/contingDataOutputApi" method="post">
+                <div class="input-date" style="display: inline-flex;">
+                    <div class="input-year input" style="display: inline-flex;">
+                        <label class="">年</label>
+                        <input type="text" class="year" name="year">
+                    </div>
+                    <div class="input-month input" style="display: inline-flex;">
+                        <label class="">月</label>
+                        <input type="text" class="month" name="month">
+                    </div>
+                </div>
+                <div class="submit-type">
+                    <button type="submit" class="submit">ダウンロード</button>
+                </div>    
+                
+            </form>
+        </div>
+    </body>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+ 
+	<script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+    <script th:inline="javascript" th:src="@{/js/jquery.fileDownload.js}"></script>
+    <script>
+	    
+	</script>
+</html>
+

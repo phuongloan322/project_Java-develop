@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Login</title>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet"
+			href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+		<script
+			src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+		<script
+			src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+		<link rel="stylesheet"
+			href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+		<!-- Link file css  -->
+		<link th:href="@{/css/login.css}" rel="stylesheet" />
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-sm navbar-dark bg-primary p-0">
+			<a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#"><i
+				class="fa fa-home"></i> 工数管理システム</a>
+		</nav>
+		<div class="container form-login">
+			<p class="text-danger" th:text="${error}"></p>
+			<form class="form-signin" method="post" th:action="@{/loginPost}">
+				<div class="form-group">
+					<label for="email" class="d-none">User name:</label> <input
+						type="text" class="form-control input" id="user_name"
+						placeholder="ユーザーNO" name="username" value="">
+				</div>
+				<div class="form-group">
+					<label for="pwd" class="d-none">Password:</label> <input
+						type="password" class="form-control input" id="password"
+						placeholder="パスワード" name="password" value="">
+				</div>
+				<input type="hidden" class="type-login" name="type" value="manual">
+				<div class="submit">
+					<button type="submit"
+						class="btn btn-primary submit-button manual-login">ログイン</button>
+					<button type="submit"
+						class="btn btn-primary submit-button auto-login">自動ログイン</button>
+				</div>
+			</form>
+		</div>
+	</body>
+	<script>
+		$(document).ready(function() {
+			$("#user_name").val("");
+			$("#password").val("");
+			$("#user_name").on("keyup", function() {
+				$(this).val($(this).val().toUpperCase());
+			})
+	
+			$(".auto-login").on("click", function() {
+				console.log($(".type-login").val())
+				$(".type-login").val("auto");
+			})
+	
+		})
+	</script>
+</html>
+
+
+

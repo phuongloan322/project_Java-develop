@@ -1,0 +1,24 @@
+.submit {
+	text-align: center;
+}
+
+.form-login {
+	margin-top: 30px;
+	max-width: 500px;
+}
+
+.submit-button {
+	width: 225px;
+}
+
+.auto-login {
+	float: right;
+}
+
+.manual-login {
+	float: left;
+}
+
+.input {
+	background-color: beige;
+}

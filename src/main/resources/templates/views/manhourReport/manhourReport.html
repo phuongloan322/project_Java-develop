@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Sample</title>
+        <!-- BootstrapのCSS読み込み -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <!-- bootstrap-datepickerのCSS読み込み -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+        <!-- jQuery読み込み -->
+       <!--  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+        <!-- Popper.js読み込み -->        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <!-- BootstrapのJS読み込み -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+        <!-- bootstrap-datepickerのJS読み込み -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ja.min.js"></script>
+        <link th:href="@{/css/manhourReport.css}" rel="stylesheet" />
+        <!-- FontAwesomeの読み込み -->
+        <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+        <script th:inline="javascript" th:src="@{/js/jquery.fileDownload.js}"></script>
+        <script th:inline="javascript" th:src="@{/js/tooltip.js}"></script>
+    	<script th:inline="javascript" th:src="@{/js/manhourReport.js}"></script>
+    	<script th:inline="javascript" th:src="@{/js/themeReport.js}"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-primary sticky-top flex-md-nowrap p-0 shadow">
+            <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#"><i class="fa fa-home"></i> 工数管理システム</a>
+            <div class="collapse navbar-collapse" id="navmenu1">
+                <div class="navbar-nav">
+                    <span class="form-control-menu">工数集計</span>
+                </div>
+            </div>
+            <ul class="navbar-nav px-3 d-flex align-items-center">
+                <li class="nav-item text-nowrap">
+                    <button type="button" class="btn btn-light"><i class="fas fa-backward"></i> 戻る</button>
+                </li>
+                <span class="form-control-user">テスト太郎さん</span>
+                <li class="nav-item text-nowrap">
+                    <button type="button" class="btn btn-light">ログアウト <i class="fas fa-sign-out-alt"></i></button>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="container-fluid">
+            <div class="row">
+
+                 <main role="main" class="container-fluid px-4">
+                     <div class="h5 pt-1 pb-1 border-bottom">画面項目呼出・保存・クリア</div>
+                     <div class="form-group row">
+                         <label class="col-form-label col-md-2 text-right">呼出</label>
+                         <div class="col-md-10">
+                            <div class="col-md-4 input-group pl-0">
+                                <select class="form-control form-control-sm save-name-had">
+                                    <option value="">保存名...</option>
+                                    <option th:if="${manhourReport.checkNone}" th:each="saveName: ${manhourReport.saveNameList}" th:text="${saveName}" th:value="${saveName}" th:selected="${saveName == manhourReport.saveName}"></option>
+                                </select>
+                                <button class="btn btn-sm btn-outline-secondary mr-2 remove-save-name">削除</button>
+                            </div>
+                         </div>
+                         <label class="col-form-label col-md-2 text-right">保存</label>
+                         <div class="col-md-10">
+                             <div class="col-md-4 input-group pl-0">
+                                 <input type="text" class="form-control form-control-sm save-name-input" name="saveName" th:value="${manhourReport.saveName}" />
+                                 <button class="btn btn-sm btn-outline-secondary mr-2 save-screen">保存</button>
+                             </div>
+                         </div>
+                         <label class="col-form-label col-md-2 text-right">クリア</label>
+                         <div class="col-md-10">
+                                 <div class="col-md-4 input-group pl-0">
+                                     <button class="btn btn-sm btn-outline-secondary mr-2">クリア</button>
+                                 </div>
+                         </div>
+                     </div>
+
+                     <div class="h5 pt-1 pb-1 border-bottom">絞り込み条件</div>
+
+                     <div class="form-group row">
+                         <label class="col-form-label col-md-2 text-right">期間</label>
+                         <div class="col-md-2 p-0">
+                             <div class="input-group date" id="datepicker1">
+                                 <input type="text" class="form-control form-control-sm start-date-input" th:value="${manhourReport.startDate}" />
+                                 <span class="input-group-append">
+                                     <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                 </span>
+                             </div>
+                         </div>
+                         <div class="col-md-1 p-0 text-md-center"><span>～</span></div>
+                         <div class="col-md-2 p-0">
+                             <div class="input-group date" id="datepicker2">
+                                 <input type="text" class="form-control form-control-sm end-date-input" th:value="${manhourReport.endDate}" />
+                                 <span class="input-group-append">
+                                     <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                 </span>
+                             </div>
+                         </div>
+                     </div>
+                     <div th:if="${manhourReport.groupList != null}">
+                     	<div class="group" th:each="group, stateGroup: ${manhourReport.groupList}" th:if="${group != null}">
+						 	<div class="form-group row">
+		                         <label class="col-form-label col-md-2 text-right">所属</label>
+		                         <div class="col-md-10">
+		                             <div class="row">
+		                                 <div class="col-md-4 input-group pl-0">
+		                                     <select class="form-control form-control-sm group-select group-select" name="hh">
+		                                     	 <option value=""></option>
+		                                     	 <option th:text="${group.groupName}" th:value="${group.groupCode}" selected></option>
+		                                         <option th:each="groupItem: ${manhourReport.groupItemList}" th:text="${groupItem.groupName}" th:value="${groupItem.groupCode}"></option>
+		                                     </select>
+		                                     <button class="group-delete">
+				                                     <i class="far fa-trash-alt"></i>
+			                                 </button>
+		                                 </div>
+	                                 	<div class="col-md-4 user-parent">
+			                               	<div class="input-group pl-0 user-child" th:if="${group.userList != null}" th:each="user, stateUser: ${group.userList}">
+			                                    <select class="form-control form-control-sm select-user user-select" th:attr="data-index=${stateGroup.count + '-' + stateUser.count}" th:if="${user != null}">
+			                                        <option value=""></option>
+			                                        <option th:value="${user.userNo}" th:text="${user.userName}" selected></option>
+			                                        <option th:each="userItem: ${group.userItemList}" th:value="${userItem.userNo}" th:text="${userItem.userName}"></option>
+			                                    </select>
+			                                    <button class="user-delete">
+				                                     <i class="far fa-trash-alt"></i>
+				                                </button>
+			                               	</div>
+			                               	<div class="input-group pl-0 user-child" th:if="${group.userList == null}">
+			                                    <select class="form-control form-control-sm user-group select-user user-select">
+			                                    	<option value=""></option>
+			                                        <option th:each="userItem: ${group.userItemList}" th:value="${userItem.userNo}" th:text="${userItem.userName}"></option>
+			                                    </select>
+			                                    <button class="user-delete">
+				                                     <i class="far fa-trash-alt"></i>
+				                                </button>
+			                               	</div>
+	                            		</div>
+	                            		<div class="col-md-5"></div>
+		                             </div>
+		                         </div>
+		                     </div> 
+		                     
+		                     <div class="form-group row">
+		                         <div class="col-md-2"></div>
+		                         <div class="col-md-10 p-0">
+		                             <div class="row align-items-center">
+		                                 <div class="col-md-4 input-group pl-0">
+		                                 </div>
+		                                 <div class="col-md-3 input-group pl-0">
+		                                     <button class="btn btn-sm btn-outline-secondary mr-2 add-user" th:attr="data-group=${group.groupCode}" data-toggle="collapse" data-target="#collapseOne2"><i class="fas fa-plus"></i> ユーザ追加</button>
+		                                 </div>
+		                             </div>
+		                         </div>
+		                     </div>
+						 </div>
+                     </div>
+					 
+					 <div th:if="${manhourReport.groupList == null}">
+					 	<div class="group">
+						 	<div class="form-group row">
+		                         <label class="col-form-label col-md-2 text-right">所属</label>
+		                         <div class="col-md-10">
+		                             <div class="row">
+		                                 <div class="col-md-4 input-group pl-0">
+		                                     <select class="form-control form-control-sm group-select group-select" name="hh">
+		                                     	 <option value=""></option>
+		                                         <option th:each="groupItem: ${manhourReport.groupItemList}" th:text="${groupItem.groupName}" th:value="${groupItem.groupCode}"></option>
+		                                     </select>
+		                                 </div>
+	                                 	<div class="col-md-4 user-parent">
+			                               	<div class="input-group pl-0 user-child">
+			                                    <select class="form-control form-control-sm select-user user-select">
+			                                        <option value=""></option>
+			                                    </select>
+			                               	</div>
+	                            		</div>
+		                             </div>
+		                         </div>
+		                     </div> 
+		                     
+		                     <div class="form-group row">
+		                         <div class="col-md-2"></div>
+		                         <div class="col-md-10 p-0">
+		                             <div class="row align-items-center">
+		                                 <div class="col-md-4 input-group pl-0">
+		                                 </div>
+		                                 <div class="col-md-3 input-group pl-0">
+		                                     <button class="btn btn-sm btn-outline-secondary mr-2 add-user" data-toggle="collapse" data-target="#collapseOne2"><i class="fas fa-plus"></i> ユーザ追加</button>
+		                                 </div>
+		                             </div>
+		                         </div>
+		                     </div>
+						 </div>					
+					 </div>
+					 
+                     <div class="form-group row">
+                         <div class="col-md-2"></div>
+                         <div class="col-md-10 p-0">
+                             <button class="btn btn-sm btn-outline-secondary mr-2 add-group" data-toggle="collapse" data-target="#collapseOne2"><i class="fas fa-plus"></i> 所属追加</button>
+                         </div>
+                     </div>
+					 <div class="theme" th:if="${manhourReport.themeList != null}">
+					 	<div class="form-group row" th:each="theme: ${manhourReport.themeList}" th:if="theme != null">
+	                         <label class="col-form-label col-md-2 text-right">テーマ</label>
+	                         <div class="col-md-10">
+	                             <div class="row">
+	                                 <div class="col-md-4 input-group pl-0 theme-child">
+	                                 	 <input type="hidden" class="appendThemeSelect">
+	                                     <input type="text" class="form-control form-control-sm theme-input appendNameThemeSelect" placeholder="テーマ選択..." aria-label="..." aria-describedby="button-addon2" th:value="${theme.nameFirst}" readonly>
+	                                     <div class="input-group-append">
+	                                         <button type="button" id="button-addon2" class="btn btn-sm btn-outline-secondary selectTheme" data-toggle="modal" data-target="#modal1"><i class="fas fa-search"></i></button>
+	                                     </div>
+	                                 </div>
+			                         <div class="col-md-2 input-group pr-2 work-content">
+			                             <select class="form-control form-control-sm work-content-select workContentsCode">
+			                             	 <option value="">内容選択...</option>
+			                                 <option th:each="${workContent: theme.workContentList}" th:value="${workContent.workContentCode}" th:text="${workContent.workContentName}" th:selected="${workContent.workContentCode==theme.workContent.workContentCode}"></option>
+			                             </select>
+			                         </div>
+			                         <div class="col-md-2 input-group work-content-detail">
+			                             <input type="text" class="form-control form-control-sm work-content-detail-input" placeholder="内容詳細..." aria-label="..." aria-describedby="button-addon2" th:value="${theme.workContentDetail}">
+			                         </div>
+			                         <button class="theme-delete">
+	                                     <i class="far fa-trash-alt"></i>
+	                                 </button>
+	                             </div>
+	                         </div>
+	                     </div>
+					 </div>					
+                     <div class="theme" th:if="${manhourReport.themeList == null}">
+                     	<div class="form-group row">
+	                         <label class="col-form-label col-md-2 text-right">テーマ</label>
+	                         <div class="col-md-10">
+	                             <div class="row">
+	                                 <div class="col-md-4 input-group pl-0 theme-child">
+	                                 	 <input type="hidden" class="appendThemeSelect">
+	                                     <input type="text" class="form-control form-control-sm theme-input appendNameThemeSelect" placeholder="テーマ選択..." aria-label="..." aria-describedby="button-addon2" value="" readonly>
+	                                     <div class="input-group-append">
+	                                         <button type="button" id="button-addon2" class="btn btn-sm btn-outline-secondary selectTheme" data-toggle="modal" data-target="#modal1"><i class="fas fa-search"></i></button>
+	                                     </div>
+	                                 </div>
+			                         <div class="col-md-2 input-group pr-2 work-content">
+			                             <select class="form-control form-control-sm work-content-select workContentsCode">
+			                                 <option value="">内容選択...</option>
+			                             </select>
+			                         </div>
+			                         <div class="col-md-2 input-group work-content-detail">
+			                             <input type="text" class="form-control form-control-sm work-content-detail-input" placeholder="内容詳細..." aria-label="..." aria-describedby="button-addon2" value="">
+			                         </div>
+			                         <button class="theme-delete">
+	                                     <i class="far fa-trash-alt"></i>
+	                                 </button>
+	                             </div>
+	                         </div>
+	                     </div>
+                     </div>
+                     <div class="form-group row">
+                         <div class="col-md-2"></div>
+                         <div class="col-md-10 p-0">
+                             <button class="btn btn-sm btn-outline-secondary mr-2 add-theme" data-toggle="collapse" data-target="#collapseOne"><i class="fas fa-plus"></i> テーマ追加</button>
+                         </div>
+                     </div>
+                     
+                     <!-- model -->
+                     <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="label1" aria-hidden="true">
+                         <div class="modal-dialog modal-lg" role="document">
+                              <div class="modal-content">
+                                  <div class="modal-header">
+                                      <h5 class="modal-title" id="label1">テーマ追加</h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                          <span aria-hidden="true">&times;</span>
+                                      </button>
+                                  </div>
+                                  <div class="modal-body">
+                                     <div class="container-fluid">
+                                         <form class="formSearchTheme">
+                                         <div class="row">
+                                             <div class="col-md-4">
+                                                 <div class="form-group">
+                                                     <label>テーマNo</label>
+                                                     <input type="text" class="form-control form-control-sm" id="selectThemeNo" name="themeNo">
+                                                 </div>
+                                             </div>
+                                             <div class="col-md-8">
+                                                 <div class="form-group">
+                                                     <label>テーマ名</label>
+                                                     <input type="text" class="form-control form-control-sm" id="selectThemeName" name="themeName">
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         <div class="row">
+                                             <div class="col-md-4">
+                                                 <div class="form-group">
+                                                     <label>担当部門</label>
+                                                     <select class="form-control form-control-sm accountingGroups" name="accountingGroupCode">
+                                                         
+                                                     </select>
+                                                 </div>                                                                                                               
+                                             </div>                                                     
+                                             <div class="col-md-4">
+                                                 <div class="form-group">
+                                                     <label>売上科目</label>
+                                                     <select class="form-control form-control-sm salesObjects" name="salesObjectCode">
+                                                         
+                                                     </select>
+                                                 </div>                                                                                                               
+                                             </div>                                                     
+                                             <div class="col-md-4">
+                                                 <div class="form-group">
+                                                     <label>売上状況</label>
+                                                     <div>                                                             
+                                                         <div class="form-check form-check-inline">
+                                                             <input class="form-check-input" type="radio" name="soldFlg" id="inlineRadio1" value="false" checked>
+                                                             <label class="form-check-label">未売上</label>
+                                                         </div>
+                                                         <div class="form-check form-check-inline">
+                                                             <input class="form-check-input" type="radio" name="soldFlg" id="inlineRadio2" value="true">
+                                                             <label class="form-check-label">売上済</label>
+                                                         </div>
+                                                         <div class="form-check form-check-inline">
+                                                             <input class="form-check-input" type="radio" name="soldFlg" id="inlineRadio3" value="全て">
+                                                             <label class="form-check-label">全て</label>
+                                                         </div>
+                                                     </div>
+                                                 </div>                                                                                                              
+                                             </div>
+                                         </div>
+                                         </form>
+                                         <div class="row">
+                                             <button type="button" class="btn btn-primary mt-2 mb-2 searchInfoTheme">検索</button>
+                                         </div>
+                                         <div class="table-responsive" style="height:300px">
+                                             <div class="table-responsive">
+                                                 <table class="table table-striped table-sm sc">
+                                                     <thead class=" table table-fixed thead-light">
+                                                         <tr>
+                                                             <th></th>
+                                                             <th>テーマNo</th>
+                                                             <th>テーマ名</th>                                                                         
+                                                             <th>売上状況</th>
+                                                         </tr>
+                                                     </thead>
+                                                     <tbody id="dataThemeSearch">
+                                                         
+                                                     </tbody> 
+                                                 </table>
+                                             </div>
+                                         </div>                                                 
+                                     </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+                                      <button type="button" class="btn btn-primary addOnThemeCheckBox" >追加</button>
+                                  </div>
+                              </div>
+                         </div>
+                     </div>
+
+					<!-- END MODEL  -->
+                     <div class="h5 pt-1 pb-1 border-bottom">レイアウト設定</div>
+
+                     <div class="form-group row">
+                         <label class="col-form-label col-md-2 text-right">表示項目</label>
+                         <div class="col-md-10 p-0">
+                             <div class="form-row align-items-center">
+                                 <div class="col-auto">
+                                     <p class="m-0">選択しない項目</p>
+                                     <select class="select-hide hide-select" multiple style="height:200px; width:150px;">
+                                         <option class="hide-option" th:each="hide: ${manhourReport.hideList}" th:text="${hide}"></option>
+                                     </select>
+                                 </div>
+                                 <div class="col-auto">
+                                     <div class="mb-2 show-change"><button>追加 →</button></div>
+                                     <div class="mb-2 hide-change"><button>← 解除</button></div>
+                                 </div>
+                                 <div class="col-auto">
+                                     <p class="m-0">選択された項目</p>
+                                     <select class="select-show show-select" multiple style="height:200px; width:150px;">
+                                         <option class="show-option" th:each="show: ${manhourReport.showList}" th:text="${show}" th:value="${show}"></option>
+                                     </select>
+                                 </div>
+                                 <div class="col-auto">
+                                     <div class="mb-2 change-prev"><button>↑</button></div>
+                                     <div class="mb-2 change-next"><button>↓</button></div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+
+                     <div class="form-group row">
+                         <label class="col-form-label col-md-2 text-right">サマリ行出力</label>
+                         <div class="col-md-10">
+                             <div class="custom-control custom-radio custom-control-inline">
+                                 <input id="total1" name="total" type="radio" class="custom-control-input total-input" th:checked="${manhourReport.total}" value="true">
+                                 <label class="custom-control-label" for="total1">出力する</label>
+                             </div>
+                             <div class="custom-control custom-radio custom-control-inline">
+                                 <input id="total2" name="total" type="radio" class="custom-control-input total-input" th:checked="!${manhourReport.total}" value="false">
+                                 <label class="custom-control-label" for="total2">出力しない</label>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="form-group row">
+                         <label class="col-form-label col-md-2 text-right">CSV区切り文字</label>
+                         <div class="col-md-10">
+                             <div class="custom-control custom-radio custom-control-inline">
+                                 <input id="comma1" name="comma" type="radio" class="custom-control-input comma-input" th:checked="${manhourReport.comma}" value="true">
+                                 <label class="custom-control-label" for="comma1">カンマ</label>
+                             </div>
+                             <div class="custom-control custom-radio custom-control-inline">
+                                 <input id="comma2" name="comma" type="radio" class="custom-control-input comma-input" th:checked="!${manhourReport.comma}" value="false">
+                                 <label class="custom-control-label" for="comma2">タブ</label>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="form-group row">
+                         <label class="col-form-label col-md-2 text-right">CSVシングルクォーテーション付加 </label>
+                         <div class="col-md-10">
+                             <div class="custom-control custom-radio custom-control-inline">
+                                 <input id="apostrophe1" name="apostrophe" type="radio" class="custom-control-input apostrophe-input" th:checked="!${manhourReport.apostrophe}" value="false">
+                                 <label class="custom-control-label" for="apostrophe1">しない</label>
+                             </div>
+                             <div class="custom-control custom-radio custom-control-inline">
+                                 <input id="apostrophe2" name="apostrophe" type="radio" class="custom-control-input apostrophe-input" th:checked="${manhourReport.apostrophe}" value="true">
+                                 <label class="custom-control-label" for="apostrophe2">する</label>
+                             </div>
+                         </div>
+                     </div>
+                     
+                     <div class="d-flex align-items-center justify-content-center py-2">
+                            <button class="btn btn-outline-secondary tab-search" style="width:300px;"><i class="fas fa-list"></i> 画面表示</button>
+                            <button class="btn btn-outline-secondary download-csv" style="width:300px;"><i class="fas fa-file-download"></i> CSVダウンロード</button>
+                     </div>                    
+                 </main>
+
+            </div>
+        </div>
+        
+        <div class="new-tab-search" style="display: none">
+			<table class="table">
+				<thead class="thead-light">
+					<tr>
+					</tr>
+				</thead>
+				<tbody>
+					
+				</tbody>
+			</table>
+		</div>
+    </body>
+</html>

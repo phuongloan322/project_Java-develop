@@ -1,0 +1,162 @@
+<html>
+<head>
+    <title>Spring Boot</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<h1>Lịch theo tiếng nhật</h1>
+	<form class="getClendar">
+	  <div class="form-group">
+	    <label for="email">Nhập ngày:</label>
+	    <input type="text" class="form-control" id="date">
+	  </div>
+	  <button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+	<table class="table table-bordered">
+	    <thead>
+	      <tr>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      <tr class="clone" style="display: none">
+	      </tr>
+	    </tbody>
+	  </table>
+</body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+	$(document).ready(function(){
+		
+		var clone = $("tbody tr").clone();
+		$(".getClendar").on("submit",function(e){
+			$("thead tr").html("");
+			$("tbody").html("");
+			e.preventDefault();
+			var date = $("#date").val();
+			$.ajax({
+	            url : "/api/calendar?date="+date,
+	            type : "post",
+	            dataType:"json",
+	            success : function (result){
+	                $.each(result,function(i,re){
+	                	if(i==0){
+	                		var parent = $("thead tr");
+	                		$.each(re,function(j,r){
+	                    		parent.append("<th>"+r+"</th>");
+	                    	})
+	                	}else{
+	                		parent = clone.clone();
+	                		$.each(re,function(j,r){
+	                    		parent.append("<td>"+r+"</td>");
+	                    	})
+	                    	$("tbody").append(parent.show());
+	                	}
+	                	
+	                })
+	            }
+	        });
+		})
+	})
+</script>
+
+
+
+	<!-- Add -->
+	<div class="modal fade" id="addModalCenter" tabindex="-1" role="dialog"
+		aria-labelledby="example1ModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLongTitle">Add title</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="name">
+						</div>
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="title">
+						</div>
+					</form>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary"
+							data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary">Add changes</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Edit -->
+	<div class="modal fade" id="editModalCenter" tabindex="-1"
+		role="dialog" aria-labelledby="example2ModalCenterTitle"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLongTitle">Edit title</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="name">
+						</div>
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="title">
+						</div>
+					</form>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary"
+							data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary">Save
+							changes</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Delete -->
+	<div class="modal fade" id="deleteModalCenter" tabindex="-1"
+		role="dialog" aria-labelledby="example3ModalCenterTitle"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLongTitle">Delete
+						title</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<h5>Confirm</h5>
+					<p>
+						Bạn có muốn xóa <a href="#" class="tooltip-test" title="Tooltip">Thằng
+							này</a> không ?
+					</p>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary"
+							data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-danger">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
